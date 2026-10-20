@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overview - Harness Engineer Handbook</title>
+<meta name="description" content="A practical handbook for building test harnesses and AI coding agent guardrails.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="brand" href="index.html">Harness Engineer Handbook</a>
+<nav>
+<a href="index.html">Home</a>
+<a class="active" href="overview.html">Overview</a>
+<a href="test-harness.html">Test Harness</a>
+<a href="ai-agent-harness.html">AI Agent Harness</a>
+<a href="devsecops.html">DevSecOps</a>
+<a href="templates.html">Templates</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Harness Engineering</h1>
+<p class="lead">A harness is the infrastructure around your code that decides whether it can be trusted. For human-written code that means test infrastructure; for AI-written code it also means mechanical guardrails that constrain and correct an agent in real time.</p>
+
+<div class="grid">
+<a class="card" href="test-harness.html"><h3>Test Harness</h3><p>Isolation, determinism, drivers vs. stubs, failure-mode simulation, stub drift.</p></a>
+<a class="card" href="ai-agent-harness.html"><h3>AI Agent Harness</h3><p>Lean AGENTS.md, PostToolUse feedback hooks, instructive lint errors, agent "eyes".</p></a>
+<a class="card" href="devsecops.html"><h3>DevSecOps</h3><p>SAST/SCA, policy-as-code with OPA, SBOMs and SLSA.</p></a>
+<a class="card" href="templates.html"><h3>Templates</h3><p>AGENTS.md, ADR, lint rule example, CI workflow stub.</p></a>
+</div>
+
+<h2>Core principles</h2>
+<h3>Grow it incrementally</h3>
+<p>Nobody builds a complete harness up front. Add one test, one lint rule, one hook at a time, in response to a real gap. Big-bang harness projects get abandoned.</p>
+<h3>Isolation first</h3>
+<p>Every test, agent run and pipeline stage must produce the same result regardless of what ran before it.</p>
+<h3>Determinism over speed</h3>
+<p>Same inputs, same outputs. Freeze the clock, seed the RNG, stub the network.</p>
+<h3>Observability</h3>
+<p>A failure should hand you the answer, not a puzzle: inputs, logs, stack trace and, for agents, the exact tool calls and results.</p>
+<h3>Mechanical enforcement beats prose</h3>
+<p>"Write good code" in an instruction file does nothing measurable. A linter rule, type check or blocking hook does.</p>
+<h3>Close the loop</h3>
+<p>Feed the output of a check (test, lint, type error) straight back to the agent in the same turn so it can self-correct.</p>
+
+<h2>Sanity-check checklist</h2>
+<ul class="check">
+<li>Can a new test, rule or hook be added without touching unrelated ones?</li>
+<li>Does anything depend on execution order, shared mutable state or leftover data?</li>
+<li>Is there wall-clock time, a live network call or unseeded randomness in the critical path?</li>
+<li>Does a failure hand you a root cause or a mystery?</li>
+<li>Do stubs exercise failure modes, not just the happy path?</li>
+<li>Is there a plan to catch stub drift?</li>
+<li>Does the agent instruction file stay under ~50 lines and point elsewhere for detail?</li>
+<li>Do lint and type errors say what to do, not just what is wrong?</li>
+<li>Are flaky checks quarantined and fixed fast, not "just rerun"?</li>
+</ul>
+
+<div class="callout">Treat the harness as production code: review it, test it, and fix or quarantine flakiness immediately. A harness that produces false failures quickly loses the team's trust.</div>
+</main>
+<div class="wrap"><footer>Harness Engineer Handbook</footer></div>
+</body>
+</html>

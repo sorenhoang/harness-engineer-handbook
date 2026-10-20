@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test Harness Fundamentals - Harness Engineer Handbook</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="brand" href="index.html">Harness Engineer Handbook</a>
+<nav>
+<a href="index.html">Home</a>
+<a href="overview.html">Overview</a>
+<a class="active" href="test-harness.html">Test Harness</a>
+<a href="ai-agent-harness.html">AI Agent Harness</a>
+<a href="devsecops.html">DevSecOps</a>
+<a href="templates.html">Templates</a>
+</nav></div></header>
+<main class="wrap">
+<h1>Test Harness Fundamentals</h1>
+<p class="lead">A test harness is everything surrounding the code under test: fixtures, mocks and stubs, the runner and the environment. Its job is to make "does this work?" answerable automatically and identically every time.</p>
+
+<h2>Isolation first</h2>
+<ul>
+<li>No shared mutable global state between tests.</li>
+<li>No test that depends on another having run, or having run first.</li>
+<li>Reset fixtures (database rows, temp files, caches) before or after each test, not just at suite start.</li>
+<li>For parallel runs, shared ports, temp directories and database rows are the most common source of "flaky" failures that are really races.</li>
+</ul>
+
+<h2>Determinism over speed</h2>
+<p>A fast but non-deterministic harness trains the team to ignore red builds. Eliminate:</p>
+<ul>
+<li><strong>Wall-clock time</strong>: inject a clock instead of calling <code>now()</code>.</li>
+<li><strong>Unseeded randomness</strong>: seed the RNG and log the seed on failure.</li>
+<li><strong>Real network calls</strong>: put live third-party services behind stubs.</li>
+<li><strong>Unordered collections</strong>: sort before asserting.</li>
+<li><strong>Concurrency</strong>: a race that shows up 1 in 50 runs is still a bug; do not paper over it with retries.</li>
+</ul>
+
+<h2>Drivers vs. stubs</h2>
+<div class="grid">
+<div class="card"><h3>Driver</h3><p>Simulates a higher-level caller (CLI, UI, calling service) so you can test a module before its real caller exists.</p></div>
+<div class="card"><h3>Stub</h3><p>Simulates a lower-level dependency (database, payment API, queue) so you can test without it running.</p></div>
+</div>
+
+<h2>Stub failure modes, not just success</h2>
+<p>A stub that only returns the happy path tests nothing about resilience. At minimum simulate:</p>
+<ul>
+<li>Timeouts and slow responses</li>
+<li>Connection refused and DNS failure</li>
+<li>4xx errors: bad request, auth failure, rate limiting</li>
+<li>5xx errors: dependency down, partial outage</li>
+<li>Malformed or unexpected-shape responses</li>
+<li>Declined business outcomes, e.g. a declined payment</li>
+</ul>
+
+<h2>The stub drift trap</h2>
+<p>Stubs are frozen assumptions. Real APIs add fields, change error codes and evolve, so a suite can stay green for months while production breaks.</p>
+<div class="callout good"><strong>Mitigations</strong>
+<ul>
+<li>Run a subset of integration tests against the real dependency (or a faithful sandbox) on a schedule, e.g. nightly.</li>
+<li>Generate stubs from the real contract (OpenAPI, protobuf, GraphQL schema) so drift shows up as a diff.</li>
+<li>Treat "the stub needs updating" as a first-class finding; never just delete the failing integration test.</li>
+</ul></div>
+
+<h2>Observability on failure</h2>
+<p>Capture and surface: the actual inputs (including the random seed), logs at the point of failure, the full stack trace, and any network activity the stub observed (what was called, with what, how many times).</p>
+
+<h2>Growing the harness incrementally</h2>
+<ul>
+<li>Add the mock or fixture you need for the test you are writing now.</li>
+<li>Extract shared setup only after you see duplication in 2-3 tests.</li>
+<li>Review harness code with the same rigor as production code.</li>
+<li>Quarantine flaky tests immediately (mark, ticket, fix or delete on a deadline).</li>
+</ul>
+
+<div class="pager"><a href="index.html">&larr; Home</a><a href="ai-agent-harness.html">AI Agent Harness &rarr;</a></div>
+</main>
+<div class="wrap"><footer>Harness Engineer Handbook</footer></div>
+</body>
+</html>
